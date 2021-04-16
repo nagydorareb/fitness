@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="p-3">
+    <h3>{{ workout.title }}</h3>
+    <p>{{ workout.date_posted|date:"F d, Y" }}</p>
+    {% if workout.user == user %}
+        <p>
+            <a href="{% url 'add_exercise' workout.id %}" class="btn btn-primary btn-sm">Add an exercise to this workout</a>
+        </p>
+    {% endif %}
+ 
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-active">
+            <th scope="col">Exercise name</th>
+            <th scope="col">Sets</th>
+            <th scope="col">Repetitions / Seconds</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exercise in exercises %}
+                <tr>
+                    <th scope="row">
+                        <a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{exercise.exercise.id}}" data-popup-url="{% url 'exercise-detail' exercise.id %}">{{ exercise.exercise.name }}</a>
+                    </th>
+                    <td>{{ exercise.set_num }}</td>
+                    <td>
+                        {{ exercise.rep_num }}
+                        {{ exercise.get_rep_type_display }}
+                    </td>
+                    <td>{{ exercise.weight_num }}</td>
+                    <td>
+                        <a href="{% url 'exercise_update' workout.id exercise.id %}"><i class="lilpadding far fa-edit"></i></a>
+                        <a href="{% url 'exercise_delete' workout.id exercise.id %}"><i class="lilpadding far fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                {% include "exercises/exercise_detail.html" with exercise=exercise.exercise %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

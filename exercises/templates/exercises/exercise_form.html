@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="p-3">
+    <div class="formcenter">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Create Exercise</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

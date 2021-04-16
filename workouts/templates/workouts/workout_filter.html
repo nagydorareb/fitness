@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% crispy filter.form filter.form.helper %}
+{% block content %}
+<div class="w-50 p-3 pagesize">
+    <h1 class="text-center">Search Workouts</h1>
+    <p class="text-center">Find workouts by training type or body focus</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                {% for obj in filter.qs %}
+                <div class="card bg-secondary mb-3" style="max-width: 50rem;">
+                    <div class="card-header">{{ obj.date_posted|date:"F d, Y" }}</div>
+                    <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+                        <div class="dropdown float-right">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="{{ obj.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
+                            </div>
+                        </div>   
+                    </h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-4">
+                <form method="get">
+                    <fieldset class="form-group">
+                            {{ filter.form|crispy }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="w-75 p-3 pagesize">
+    <h1 class="text-center">Search Exercises by Body Part</h1>
+    <p>Click on the exercise name for details!</p>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-9">
+                {% for obj in filter.qs %}
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <img src="{{ obj.image.url }}" width=100px alt="Exercise-Image">
+                        </div>
+                        <div class="col-10">
+                            <h5><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}">{{ obj.name }}</a></h5>
+                        </div>
+                    </div>
+                </div>
+                {% include "exercises/exercise_detail.html" with exercise=obj %}
+                {% endfor %}
+            </div>
+            <div class="col-3">
+                <form method="get">
+                    <fieldset class="form-group">
+                            {{ filter.form|crispy }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-primary btn-sm" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

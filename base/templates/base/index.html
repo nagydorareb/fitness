@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-3">Start Your Fitness Journey!</h1>
+        <p class="lead">Create your own workouts! Follow workout plans!</p>
+        <p class="lead">
+        <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Register now!</a>
+        </p>
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+          <div class="col-md-4">
+            <img class="rounded-circle mb-2" src="{% static 'base/pics/heria_icon.jpg' %}" alt="Workout Builder" width="120" height="120">
+            <h2>Workout Builder</h2>
+            <p>
+                Use our simple workout builder with ever-growing library of exercises to edit and create workouts in seconds!
+            </p>
+          </div>
+          <div class="col-md-4">
+            <img class="rounded-circle mb-2" src="{% static 'base/pics/yoga_icon.jpg' %}" alt="Add Exercises" width="120" height="120">
+            <h2>Add Exercises</h2>
+            <p>If an exercise doesn't exist in our Exercise Bank you can easily create your own custom exercises!</p>
+          </div>
+          <div class="col-md-4">
+            <img class="rounded-circle mb-2" src="{% static 'base/pics/run_icon.jpg' %}" alt="Add Exercises" width="120" height="120">
+            <h2>Workout Plans</h2>
+            <p>Not sure where to start or just looking for something new? Begin by taking a look at our simple, easy-to-follow workout plans!</p>
+          </div>
+    </div>
+{% endblock content %}

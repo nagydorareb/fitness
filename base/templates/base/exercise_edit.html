@@ -1,0 +1,16 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<p>Edit exercise from {{ workout.title }}</p>
+<div class="w-50 p-3 formcenter">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            {{ u_form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
