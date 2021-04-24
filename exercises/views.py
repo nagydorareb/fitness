@@ -19,7 +19,6 @@ def exercise_create(request):
         if form.is_valid():
             exercise = form.save(commit=False)
             exercise.user = request.user
-            # exercise.image = request.FILES['image']
             exercise.image = request.FILES['image'] if 'image' in request.FILES else 'default_exercise.jpg'
             exercise.save()
             messages.success(request, f'The exercise has been created')

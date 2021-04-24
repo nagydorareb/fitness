@@ -3,6 +3,7 @@
 {% block content %}
 <div class="p-3">
     <h3>Add an exercise to {{ workout.title }}</h3>
+    <a href="{% url 'exercise-filter' %}">Go to Exercise Bank</a>
     <div class="w-50 p-3 formcenter">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -16,3 +17,27 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block script %}
+
+<script>
+    $(document).ready(function () {
+        $('#id_exercise').select2({
+            placeholder: "Start typing an exercise name...",
+            ajax: {
+                url: "{% url 'add_exercise' workout.id %}",
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {id: item.id, text: item.name};
+                        })
+                    };
+                }
+            },
+            minimumInputLength: 1
+        });
+    });
+</script>
+
+{% endblock %}

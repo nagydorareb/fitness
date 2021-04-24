@@ -10,7 +10,7 @@
             <div class="col-8">
                 {% for obj in filter.qs %}
                 <div class="card bg-secondary mb-3" style="max-width: 50rem;">
-                    <div class="card-header">{{ obj.date_posted|date:"F d, Y" }}</div>
+                    <div class="card-header">{{ obj.workout_day|date:"F d, Y" }}</div>
                     <div class="card-body">
                     <h4 class="card-title">
                         <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
@@ -33,7 +33,7 @@
                             {{ filter.form|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-primary" type="submit">Search</button>
+                        <button class="btn btn-primary" type="submit"><i class="lilpadding fas fa-search"></i>Search</button>
                     </div>
                 </form>
             </div>

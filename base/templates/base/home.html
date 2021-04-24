@@ -1,14 +1,32 @@
 {% extends "base/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="w-75 p-3 pagesize">
     <h2 class="text-center">Your workouts</h2>
     <div class="container">
         <div class="row">
-            <div class="col-8">
-                <div class="formcenter">
-                    {% for workout in workouts %}
-                        <div class="card bg-secondary mb-3" style="max-width: 50rem;">
-                            <div class="card-header">{{ workout.date_posted|date:"F d, Y" }}</div>
+            <div class="col-7">
+                {% for workout in date_filter.qs %}
+                    <div class="card bg-secondary mb-3" style="max-width: 50rem;">
+                            <div class="card-header">
+                                <div class="d-flex">
+                                    <div class="mr-auto">
+                                        {% if workout.training_type == "ST" %}
+                                            <i class="fas fa-dumbbell lilpadding"></i>
+                                        {% endif %}
+                                        {% if workout.training_type == "HI" %}
+                                            <i class="fas fa-heartbeat lilpadding"></i>
+                                        {% endif %}
+                                        {% if workout.training_type == "CA" %}
+                                            <i class="fas fa-running lilpadding"></i>
+                                        {% endif %}
+                                        {% if workout.training_type == "YO" %}
+                                            <i class="fas fa-spa lilpadding"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>{{ workout.workout_day|date:"F d, Y" }}</div>
+                                </div>
+                            </div>
                             <div class="card-body">
                             <h4 class="card-title">
                                 <a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a>
@@ -24,19 +42,56 @@
                                 </div>   
                             </h4>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-            <div class="col-4">
+            <div class="col-5">
                 <p>Here you can view, create and edit your own workouts!</p>
-                <h6 class="text-info">Steps:</h6>
+                <h6 class="text-info p-2">Steps:</h6>
                 <p><i class="fa fa-check" aria-hidden="true"></i> Add workout <br> 
                     <i class="fa fa-check" aria-hidden="true"></i> Add exercises to workout <br> 
                     <i class="fa fa-check" aria-hidden="true"></i> Set the repetitions for each exercise</p>
-                <p><a href="{% url 'add' %}" class="btn btn-primary">Add workout</a></p>
+                <p><a href="{% url 'add' %}" class="btn btn-primary"><i class="lilpadding fas fa-plus-circle"></i>Add workout</a></p>
+                <h6 class="text-info p-2">Filter:</h6>
+                <p>
+                    <a href="{% url 'home' %}" class="btn btn-primary"><i class="fas fa-dumbbell lilpadding"></i>Show all workouts</a>
+                </p>
+                <div>
+                    <button class="collapsible"><i class="fas fa-filter lilpadding"></i>Search for workouts by date</button>
+                    <div class="content">
+                        <p>
+                            <form method="get">
+                                <fieldset class="form-group">
+                                        {{ date_filter.form|crispy }}
+                                </fieldset>
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+                                </div>
+                            </form>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock content %}
+
+{% block script %}
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+    </script>
+{% endblock %}

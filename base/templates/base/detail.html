@@ -5,13 +5,16 @@
     <p>{{ workout.date_posted|date:"F d, Y" }}</p>
     {% if workout.user == user %}
         <p>
-            <a href="{% url 'add_exercise' workout.id %}" class="btn btn-primary btn-sm">Add an exercise to this workout</a>
+            <a href="{% url 'add_exercise' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding fas fa-plus-circle"></i>Add exercise to workout</a>
+            <a href="{% url 'update' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding far fa-edit"></i>Edit workout</a>
+            <a href="{% url 'delete' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding far fa-trash-alt"></i>Delete workout</a>
         </p>
     {% endif %}
  
     <table class="table table-hover">
         <thead>
             <tr class="table-active">
+            <th scope="col">Picture of exercise</th>
             <th scope="col">Exercise name</th>
             <th scope="col">Sets</th>
             <th scope="col">Repetitions / Seconds</th>
@@ -22,16 +25,19 @@
         <tbody>
             {% for exercise in exercises %}
                 <tr>
-                    <th scope="row">
+                    <td class="align-middle">
+                        <img src="{{ exercise.exercise.image.url }}" width=100px alt="Exercise-Image">
+                    </td>
+                    <td class="align-middle">
                         <a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{exercise.exercise.id}}" data-popup-url="{% url 'exercise-detail' exercise.id %}">{{ exercise.exercise.name }}</a>
-                    </th>
-                    <td>{{ exercise.set_num }}</td>
-                    <td>
+                    </td>
+                    <td class="align-middle">{{ exercise.set_num }}</td>
+                    <td class="align-middle">
                         {{ exercise.rep_num }}
                         {{ exercise.get_rep_type_display }}
                     </td>
-                    <td>{{ exercise.weight_num }}</td>
-                    <td>
+                    <td class="align-middle">{{ exercise.weight_num }}</td>
+                    <td class="align-middle">
                         <a href="{% url 'exercise_update' workout.id exercise.id %}"><i class="lilpadding far fa-edit"></i></a>
                         <a href="{% url 'exercise_delete' workout.id exercise.id %}"><i class="lilpadding far fa-trash-alt"></i></a>
                     </td>

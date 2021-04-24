@@ -1,16 +1,42 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<p>Edit exercise from {{ workout.title }}</p>
-<div class="w-50 p-3 formcenter">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            {{ u_form|crispy }}
-        </fieldset>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-    </form>
+<div class="p-3">
+    <h2>Edit exercise from {{ workout.title }}</h2>
+    <div class="w-50 p-3 formcenter">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                {{ u_form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
 </div>
+
 {% endblock content %}
+
+{% block script %}
+
+<script>
+    $(document).ready(function () {
+        $('#id_exercise').select2({
+            ajax: {
+                url: "{% url 'exercise_update' workout.id exercise_set.id %}",
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {id: item.id, text: item.name};
+                        })
+                    };
+                }
+            },
+            minimumInputLength: 1
+        });
+    });
+</script>
+
+{% endblock %}

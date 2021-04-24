@@ -1,21 +1,33 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Workout, ExerciseSet
+from .models import Workout, ExerciseSet, Exercise
 from django.contrib.auth.models import User
 from django.views.generic import ( 
     DetailView,
     CreateView,
     UpdateView,
-    DeleteView
+    DeleteView,
 )
 from django.http import (
     HttpResponseForbidden,
     HttpResponseRedirect
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .forms import SetForm, SetUpdateForm
+from .forms import SetForm, WorkoutForm, SetUpdateForm
 from django.urls import reverse
 from django.contrib import messages
+
+import calendar
+from calendar import HTMLCalendar
+from django.utils.safestring import mark_safe
+import json
+from django.http import JsonResponse
+
+from .helpers import WorkoutCalendar
+
+from django.views.generic.edit import FormView
+import datetime
+from .filter import WorkoutDateFilter
 
 def index(request):
     return render(request, 'base/index.html')
@@ -23,9 +35,11 @@ def index(request):
 @login_required
 def home(request):
     template_data = {}
-    workouts = Workout.objects.filter(user=request.user)
-    template_data['workouts'] = workouts
-
+    user = request.user
+    date_filter = WorkoutDateFilter(request.GET, queryset=Workout.objects.filter(user=request.user))
+    template_data['date_filter'] = date_filter
+    template_data['user'] = user
+    
     return render(request, 'base/home.html', template_data)
 
 @login_required
@@ -38,17 +52,40 @@ def view(request, pk):
 
     return render(request, 'base/detail.html', template_data)
 
+@login_required
+def workout_calendar(request, year=None, month=None):
+    template_data = {}
+
+    year = int(year) if year else datetime.date.today().year
+    month = int(month) if month else datetime.date.today().month
+    prev_month = int(month - 1)
+    next_month = int(month + 1)
+
+    workouts = Workout.objects.filter(user=request.user, workout_day__year=year, workout_day__month=month)
+    user = request.user
+    cal = WorkoutCalendar(workouts).formatmonth(year, month)
+
+    template_data['current_year'] = year
+    template_data['current_month'] = month
+    template_data['prev_month'] = prev_month
+    template_data['next_month'] = next_month
+    template_data['cal'] = cal
+    template_data['workouts'] = workouts
+
+    return render(request, 'base/workout_calendar.html', template_data) 
+
 class WorkoutAddView(LoginRequiredMixin, CreateView):
     model = Workout
-    fields = ['title', 'training_type', 'body_focus']
+    form_class = WorkoutForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+
 class WorkoutUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workout
-    fields = ['title', 'training_type', 'body_focus']
+    form_class = WorkoutForm
     template_name = 'base/workout_update.html'
 
     def form_valid(self, form):
@@ -78,6 +115,12 @@ def add_exercise(request, workout_pk):
     if workout.get_owner_object().user != request.user:
         return HttpResponseForbidden()
 
+    if request.is_ajax():
+        term = request.GET.get('term')
+        exercises = Exercise.objects.all().filter(name__icontains=term)
+        response_content = list(exercises.values())
+        return JsonResponse(response_content, safe=False)
+
     if request.method == 'POST':
         set_form  = SetForm(request.POST)
         if set_form.is_valid():
@@ -87,7 +130,6 @@ def add_exercise(request, workout_pk):
 
             messages.success(request, f'The exercise has been added to the workout')
             return HttpResponseRedirect(reverse('workout_detail', kwargs={'pk': workout.id}))
-
     else:
         set_form  = SetForm(instance=workout)
 
@@ -110,6 +152,13 @@ def exercise_set_view(request, workout_pk, pk):
 def exercise_set_update(request, workout_pk, pk):
     workout = get_object_or_404(Workout, pk=workout_pk)
     exercise_set = get_object_or_404(ExerciseSet, pk=pk)
+
+    if request.is_ajax():
+        term = request.GET.get('term')
+        exercises = Exercise.objects.all().filter(name__icontains=term)
+        response_content = list(exercises.values())
+        return JsonResponse(response_content, safe=False)
+
     if request.method == 'POST':
         u_form = SetUpdateForm(request.POST, instance=exercise_set)
         if u_form.is_valid():
@@ -120,7 +169,8 @@ def exercise_set_update(request, workout_pk, pk):
 
     context = {
         'u_form' : u_form,
-        'workout' : workout
+        'workout' : workout,
+        'exercise_set': exercise_set
     }
 
     return render(request, 'base/exercise_edit.html', context)

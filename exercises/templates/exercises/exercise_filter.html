@@ -11,11 +11,20 @@
                 {% for obj in filter.qs %}
                 <div class="container">
                     <div class="row align-items-center">
-                        <div class="col-2">
+                        <div class="col-3">
                             <img src="{{ obj.image.url }}" width=100px alt="Exercise-Image">
                         </div>
-                        <div class="col-10">
+                        <div class="col-6">
                             <h5><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}">{{ obj.name }}</a></h5>
+                        </div>
+                        <div class="col-3">
+                            <div class="dropdown">
+                                <button class="dropbtn"><a href="#" class="float-right"><i class="fas fa-ellipsis-v"></i></a></button>
+                                <div class="dropdown-content">
+                                  <a class="dropdown-item" href="#"><i class="lilpadding fas fa-plus-circle"></i>Add to workout</a>
+                                  <a class="open-exercise-detail dropdown-item" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}"><i class="lilpadding far fa-eye"></i>View details</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -28,7 +37,7 @@
                             {{ filter.form|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-primary btn-sm" type="submit">Search</button>
+                        <button class="btn btn-primary btn-sm" type="submit"><i class="lilpadding fas fa-search"></i>Search</button>
                     </div>
                 </form>
             </div>

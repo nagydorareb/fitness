@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from datetime import date
 from django.contrib.auth.models import User
 from django.urls import reverse
 from PIL import Image
@@ -30,7 +31,7 @@ class Workout(models.Model):
     ]
 
     title = models.CharField(max_length=100)
-    date_posted = models.DateTimeField(default=timezone.now)
+    workout_day = models.DateField(default=date.today)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     training_type = models.CharField(max_length=100, blank=True, null=True, choices = TRAINING)
     body_focus = models.CharField(max_length=100, blank=True, null=True, choices = BODYFOCUS)
@@ -45,7 +46,7 @@ class Workout(models.Model):
         return self
 
     class Meta:
-        ordering = ["-date_posted", ]
+        ordering = ["-workout_day", ]
 
 class Exercise(models.Model):
     ARMS = 'AR'
@@ -89,6 +90,9 @@ class Exercise(models.Model):
             output_size = (500, 500)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+    class Meta:
+        ordering = ["name", ]
         
 class ExerciseSet(models.Model):
     REP = 'RE'
