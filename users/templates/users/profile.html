@@ -1,7 +1,7 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="row d-flex justify-content-center">
+<div class="pt-3 row d-flex justify-content-center">
     <div class="col-xl-6 col-md-12">
         <div class="card user-card-full">
             <div class="row m-l-0 m-r-0">
@@ -17,8 +17,7 @@
                 <div class="col-sm-8">
                     <div class="card-block">
                         <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Profile Information</h6>
-                        <!-- FORM HERE -->
-                        <div class="text-to-left">
+                        <div class="text-left">
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <fieldset class="form-group">

@@ -1,80 +1,120 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="w-75 p-3 pagesize">
-    <h2 class="text-center">Your workouts</h2>
-    <div class="container">
-        <div class="row">
-            <div class="col-7">
-                {% for workout in date_filter.qs %}
-                    <div class="card bg-secondary mb-3" style="max-width: 50rem;">
-                            <div class="card-header">
-                                <div class="d-flex">
-                                    <div class="mr-auto">
-                                        {% if workout.training_type == "ST" %}
-                                            <i class="fas fa-dumbbell lilpadding"></i>
-                                        {% endif %}
-                                        {% if workout.training_type == "HI" %}
-                                            <i class="fas fa-heartbeat lilpadding"></i>
-                                        {% endif %}
-                                        {% if workout.training_type == "CA" %}
-                                            <i class="fas fa-running lilpadding"></i>
-                                        {% endif %}
-                                        {% if workout.training_type == "YO" %}
-                                            <i class="fas fa-spa lilpadding"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div>{{ workout.workout_day|date:"F d, Y" }}</div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                            <h4 class="card-title">
-                                <a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a>
-                                <div class="dropdown float-right">
-                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
-                                        <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
-                                        <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
-                                    </div>
-                                </div>   
-                            </h4>
-                            </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="col-5">
-                <p>Here you can view, create and edit your own workouts!</p>
-                <h6 class="text-info p-2">Steps:</h6>
-                <p><i class="fa fa-check" aria-hidden="true"></i> Add workout <br> 
-                    <i class="fa fa-check" aria-hidden="true"></i> Add exercises to workout <br> 
-                    <i class="fa fa-check" aria-hidden="true"></i> Set the repetitions for each exercise</p>
-                <p><a href="{% url 'add' %}" class="btn btn-primary"><i class="lilpadding fas fa-plus-circle"></i>Add workout</a></p>
-                <h6 class="text-info p-2">Filter:</h6>
-                <p>
-                    <a href="{% url 'home' %}" class="btn btn-primary"><i class="fas fa-dumbbell lilpadding"></i>Show all workouts</a>
-                </p>
-                <div>
-                    <button class="collapsible"><i class="fas fa-filter lilpadding"></i>Search for workouts by date</button>
-                    <div class="content">
-                        <p>
-                            <form method="get">
-                                <fieldset class="form-group">
-                                        {{ date_filter.form|crispy }}
-                                </fieldset>
-                                <div class="form-group">
-                                    <button class="btn btn-primary btn-sm" type="submit">Filter</button>
-                                </div>
-                            </form>
-                        </p>
-                    </div>
-                </div>
+<div >
+    <div class="d-flex">
+        <div class="p-3 text-left">
+            <h1 class="display-2">Your workouts</h1>
+            <p>Here you can view, create and edit your own workouts!</p>
+            <p>
+                <a href="{% url 'add' %}" class="btn btn-primary"><i class="fas fa-plus lilpadding"></i>Add workout</a>
+                <a href="#" class="btn btn-primary"><i class="far fa-heart lilpadding"></i>Favorite workouts</a>
+            </p>
+            <div class="tooltipp">How can I create a workout?
+                <span class="tooltiptextp">
+                    1. Click add workout <br> 
+                    2. Add exercises to workout <br> 
+                    3. Set the repetitions for each exercise
+                </span>
             </div>
         </div>
+        <div class="p-3 ml-auto text-left">
+            <div>
+                <button class="btn btn-secondary collapsible"><i class="fas fa-filter lilpadding"></i>Search for workouts by date</button>
+                <div class="content mb-2">
+                    <p>
+                        <form method="get">
+                            <fieldset class="form-group">
+                                    {{ date_filter.form|crispy }}
+                            </fieldset>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm" type="submit">Filter</button>
+                            </div>
+                        </form>
+                    </p>
+                </div>
+            </div>
+            <p>
+                <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-dumbbell lilpadding"></i>Show all workouts</a>
+            </p>
+        </div>
     </div>
+
+    <div class="container">
+        {% for workout in workouts %}
+            {% if forloop.first %}
+                <div class="row">
+            {% endif %}
+                    <div class="col-md-3 wcontainer">
+                        {% if workout.training_type == "ST" %}
+                            <i class="fas fa-dumbbell fa-3x lilpadding"></i>
+                        {% elif workout.training_type == "HI" %}
+                            <i class="fas fa-heartbeat fa-3x lilpadding"></i>
+                        {% elif workout.training_type == "CA" %}
+                            <i class="fas fa-running fa-3x lilpadding"></i>
+                        {% elif workout.training_type == "YO" %}
+                            <i class="fas fa-spa fa-3x lilpadding"></i>
+                        {% endif %}
+                        <div class="pt-2"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
+                        
+                        <div class="d-flex">
+                            <div class="mr-auto">
+                                <small>{{ workout.workout_day|date:"F d, Y" }}</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
+                                    <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
+                                    <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if forloop.counter == 3 %}
+                {% endif %}
+            {% if forloop.counter|divisibleby:3 %}
+                </div>
+                <div class="row">
+            {% endif %}
+            {% if forloop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+        
+    {% if workouts.has_other_pages %}
+        <div class="pt-3">
+            <ul class="pagination justify-content-center">
+            {% if workouts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ workouts.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+            {% endif %}
+    
+            {% for i in workouts.paginator.page_range %}
+                {% if workouts.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link" href="#"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+    
+            {% if workouts.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ workouts.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
 </div>
+
 {% endblock content %}
 
 {% block script %}
@@ -93,5 +133,5 @@
         } 
       });
     }
-    </script>
+</script>
 {% endblock %}

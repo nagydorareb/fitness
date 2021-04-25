@@ -11,6 +11,15 @@ class WorkoutCalendar(HTMLCalendar):
         super(WorkoutCalendar, self).__init__()
         self.workouts = self.group_by_day(workouts)
 
+    def add_icon(self, argument):
+        switcher = {
+            "ST": '<i class="fas fa-dumbbell lilpadding"></i>',
+            "HI": '<i class="fas fa-heartbeat lilpadding"></i>',
+            "CA": '<i class="fas fa-running lilpadding"></i>',
+            "YO": '<i class="fas fa-spa lilpadding"></i>',
+        }
+        return switcher.get(argument)
+
     def formatday(self, day, weekday):
         if day != 0:
             cssclass = self.cssclasses[weekday]
@@ -21,14 +30,7 @@ class WorkoutCalendar(HTMLCalendar):
                 body = ['<br>']
                 for workout in self.workouts[day]:
                     body.append('<a href="%s">' % workout.get_absolute_url())
-                    if workout.training_type == "ST":
-                        body.append('<i class="fas fa-dumbbell lilpadding"></i>')
-                    if workout.training_type == "HI":
-                        body.append('<i class="fas fa-heartbeat lilpadding"></i>')
-                    if workout.training_type == "CA":
-                        body.append('<i class="fas fa-running lilpadding"></i>')
-                    if workout.training_type == "YO":
-                        body.append('<i class="fas fa-spa lilpadding"></i>')
+                    body.append(self.add_icon(workout.training_type))
                     body.append(esc(workout.title))
                     body.append('<br>')
                 body.append('')

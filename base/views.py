@@ -28,6 +28,7 @@ from .helpers import WorkoutCalendar
 from django.views.generic.edit import FormView
 import datetime
 from .filter import WorkoutDateFilter
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def index(request):
     return render(request, 'base/index.html')
@@ -39,6 +40,20 @@ def home(request):
     date_filter = WorkoutDateFilter(request.GET, queryset=Workout.objects.filter(user=request.user))
     template_data['date_filter'] = date_filter
     template_data['user'] = user
+
+    workout_list = date_filter.qs
+    paginator = Paginator(workout_list, 6)
+    page = request.GET.get('page', 1)
+    
+    try:
+        workouts = paginator.page(page)
+    except PageNotAnInteger:
+        workouts = paginator.page(1)
+    except EmptyPage:
+        workouts = paginator.page(paginator.num_pages)
+
+    template_data['paginator'] = paginator
+    template_data['workouts'] = workouts
     
     return render(request, 'base/home.html', template_data)
 
