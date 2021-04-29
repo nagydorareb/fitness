@@ -12,7 +12,7 @@ class SetForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['exercise'].queryset = Exercise.objects.none()
+        # self.fields['exercise'].queryset = Exercise.objects.none()
 
         if 'exercise' in self.data:
             self.fields['exercise'].queryset = Exercise.objects.all()

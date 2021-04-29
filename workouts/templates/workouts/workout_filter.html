@@ -2,32 +2,57 @@
 {% load crispy_forms_tags %}
 {% crispy filter.form filter.form.helper %}
 {% block content %}
-<div class="w-50 p-3 pagesize">
-    <h1 class="text-center">Search Workouts</h1>
+<div class="p-3 pagesize">
+    <h1 class="display-4 text-center">Search Workouts</h1>
     <p class="text-center">Find workouts by training type or body focus</p>
-    <div class="container">
+    <div class="w-75 container">
         <div class="row">
-            <div class="col-8">
-                {% for obj in filter.qs %}
-                <div class="card bg-secondary mb-3" style="max-width: 50rem;">
-                    <div class="card-header">{{ obj.workout_day|date:"F d, Y" }}</div>
-                    <div class="card-body">
-                    <h4 class="card-title">
-                        <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
-                        <div class="dropdown float-right">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="{{ obj.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
+            <div class="col-9">
+                <div class="container">
+                    {% for workout in workouts %}
+                        {% if forloop.first %}
+                            <div class="row">
+                        {% endif %}
+                                <div class="col-12 wcontainer">
+                                    {% if workout.training_type == "ST" %}
+                                        <i class="fas fa-dumbbell fa-3x lilpadding"></i>
+                                    {% elif workout.training_type == "HI" %}
+                                        <i class="fas fa-heartbeat fa-3x lilpadding"></i>
+                                    {% elif workout.training_type == "CA" %}
+                                        <i class="fas fa-running fa-3x lilpadding"></i>
+                                    {% elif workout.training_type == "YO" %}
+                                        <i class="fas fa-spa fa-3x lilpadding"></i>
+                                    {% endif %}
+                                    <div class="pt-2"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
+                                    
+                                    <div class="d-flex">
+                                        <div class="mr-auto">
+                                            <small>{{ workout.workout_day|date:"F d, Y" }}</small>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary btn-sm dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
+                                                <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
+                                                <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                        {% if forloop.counter|divisibleby:1 %}
                             </div>
-                        </div>   
-                    </h4>
-                    </div>
+                            <div class="row">
+                        {% endif %}
+                        {% if forloop.last %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <form method="get">
                     <fieldset class="form-group">
                             {{ filter.form|crispy }}
@@ -39,5 +64,34 @@
             </div>
         </div>
     </div>
+
+
+    {% if workouts.has_other_pages %}
+        <div class="pt-3">
+            <ul class="pagination justify-content-center">
+            {% if workouts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ workouts.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+            {% endif %}
+    
+            {% for i in workouts.paginator.page_range %}
+                {% if workouts.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link" href="#"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+    
+            {% if workouts.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ workouts.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

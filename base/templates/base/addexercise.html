@@ -19,25 +19,25 @@
 {% endblock content %}
 
 {% block script %}
-
-<script>
-    $(document).ready(function () {
-        $('#id_exercise').select2({
-            placeholder: "Start typing an exercise name...",
-            ajax: {
-                url: "{% url 'add_exercise' workout.id %}",
-                dataType: 'json',
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {id: item.id, text: item.name};
-                        })
-                    };
-                }
-            },
-            minimumInputLength: 1
-        });
-    });
-</script>
-
+    {% if not empty %}
+        <script>
+            $(document).ready(function () {
+                $('#id_exercise').select2({
+                    placeholder: "Start typing an exercise name...",
+                    ajax: {
+                        url: "{% url 'add_exercise' workout.id %}",
+                        dataType: 'json',
+                        processResults: function (data) {
+                            return {
+                                results: $.map(data, function (item) {
+                                    return {id: item.id, text: item.name};
+                                })
+                            };
+                        }
+                    },
+                    minimumInputLength: 1
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

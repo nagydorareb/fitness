@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.urls import reverse
 from PIL import Image
+from workouts.models import WorkoutPlan
 
 class Workout(models.Model):
     HIIT = 'HI'
@@ -32,9 +33,15 @@ class Workout(models.Model):
 
     title = models.CharField(max_length=100)
     workout_day = models.DateField(default=date.today)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    training_type = models.CharField(max_length=100, blank=True, null=True, choices = TRAINING)
-    body_focus = models.CharField(max_length=100, blank=True, null=True, choices = BODYFOCUS)
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    training_type = models.CharField(max_length=100, choices = TRAINING)
+    body_focus = models.CharField(max_length=100, choices = BODYFOCUS)
+
+    workout_plan = models.ManyToManyField(WorkoutPlan, blank=True)
+    plan_week = models.PositiveIntegerField(blank=True, null=True)
+    plan_day = models.PositiveIntegerField(blank=True, null=True)
+    plan_user = models.ManyToManyField(User, related_name="workouts", blank=True)
 
     def __str__(self):
         return self.title

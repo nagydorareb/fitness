@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="w-75 p-3 pagesize">
-    <h1 class="text-center">Search Exercises by Body Part</h1>
+    <h1 class="text-center display-4">Search Exercises by Body Part</h1>
     <p>Click on the exercise name for details!</p>
 
     <div class="container">
@@ -18,13 +18,29 @@
                             <h5><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}">{{ obj.name }}</a></h5>
                         </div>
                         <div class="col-3">
-                            <div class="dropdown">
-                                <button class="dropbtn"><a href="#" class="float-right"><i class="fas fa-ellipsis-v"></i></a></button>
-                                <div class="dropdown-content">
-                                  <a class="dropdown-item" href="#"><i class="lilpadding fas fa-plus-circle"></i>Add to workout</a>
-                                  <a class="open-exercise-detail dropdown-item" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}"><i class="lilpadding far fa-eye"></i>View details</a>
-                                </div>
-                            </div>
+                            
+                            
+                            <ul class="dropdown-option">
+                                <li>
+                                    <div><i class="fas fa-ellipsis-h"></i></div>
+                                    <!-- First level sub dropdown -->
+                                    <ul>
+                                        <li>
+                                            <div><i class="lilpadding fas fa-plus"></i>Add to workout<i class="fas fa-chevron-right pt-1 float-right"></i></div>
+                                            <!-- Second level sub dropdown -->
+                                            <ul>
+                                                <li><a href="{% url 'add' %}">Create new workout</a></li>
+                                                <div class="dropdown-divider"></div>
+                                                {% for workout in workouts %}
+                                                    <li><a href="{% url 'add_exercise' workout.id obj.id %}">{{ workout.title }}</li></a>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                        <li><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}"><i class="lilpadding far fa-eye"></i>View details</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+
                         </div>
                     </div>
                 </div>

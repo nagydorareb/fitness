@@ -22,6 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from workouts import views as workouts_views
+from workouts.views import WorkoutPlanListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +36,9 @@ urlpatterns = [
     path('', include('exercises.urls')),
 
     path('workouts/', workouts_views.workouts_filter, name='workouts-filter'),
+    path('programs/', WorkoutPlanListView.as_view(), name='workout-programs'),
+    path('programs/<int:pk>', workouts_views.workoutplan_detail, name='workout-program-detail'),
+    path('programs/<int:pk>/unfollow', workouts_views.unfollow_workoutplan, name='workout-program-unfollow'),
 ]
 
 if settings.DEBUG:

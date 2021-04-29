@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from base.models import Exercise
+from base.models import Exercise, Workout
 from django.contrib.auth.decorators import login_required
 from .filter import ExerciseFilter
 from .forms import ExerciseCreateForm
@@ -7,8 +7,12 @@ from django.contrib import messages
 
 @login_required
 def exercise_filter(request):
+    template_data = {}
     f = ExerciseFilter(request.GET, queryset=Exercise.objects.all())
-    return render(request, 'exercises/exercise_filter.html', {'filter': f})
+    workouts = Workout.objects.filter(user=request.user)
+    template_data['filter'] = f
+    template_data['workouts'] = workouts
+    return render(request, 'exercises/exercise_filter.html', template_data)
 
 @login_required
 def exercise_create(request):

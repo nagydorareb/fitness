@@ -4,6 +4,7 @@ from itertools import groupby
 from .models import Workout
 
 from django.utils.html import conditional_escape as esc
+from django.conf.urls.static import static
 
 class WorkoutCalendar(HTMLCalendar):
 
@@ -29,10 +30,17 @@ class WorkoutCalendar(HTMLCalendar):
                 cssclass += ' filled'
                 body = ['<br>']
                 for workout in self.workouts[day]:
-                    body.append('<a href="%s">' % workout.get_absolute_url())
-                    body.append(self.add_icon(workout.training_type))
-                    body.append(esc(workout.title))
-                    body.append('<br>')
+                    if workout.workout_plan.exists():
+                        body.append('<a href="%s">' % workout.get_absolute_url())
+                        body.append('<span style="color: mediumslateblue;">')
+                        body.append(self.add_icon(workout.training_type))
+                        body.append(esc(workout.title))
+                        body.append('<br>')
+                    else:
+                        body.append('<a href="%s">' % workout.get_absolute_url())
+                        body.append(self.add_icon(workout.training_type))
+                        body.append(esc(workout.title))
+                        body.append('<br>')
                 body.append('')
                 return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
             return self.day_cell(cssclass, day)

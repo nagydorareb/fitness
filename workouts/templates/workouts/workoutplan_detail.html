@@ -1,0 +1,107 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% regroup workouts by plan_week as week_list %}
+<h1>{{ plan.title }}</h1>
+
+<div class="p-2">
+    <h6>Program Information</h6>
+    <table class="table w-25 text-left">
+        <tbody>
+                <tr>
+                    <td class="align-middle">
+                        Difficulty:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_difficulty_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-middle">
+                        Main Goal:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_main_goal_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-middle">
+                        Program Duration:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_plan_length_display }} Weeks
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-middle">
+                        Days Per Week:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_days_per_week_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-middle">
+                        Time Per Workout:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_time_per_workout_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="align-middle">
+                        Equipment Required:
+                    </td>
+                    <td class="align-middle">
+                        {{ plan.get_equipment_display }}
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+
+{% if following is True %}
+    <a href="{% url 'workout-program-unfollow' plan.id %}" class="btn btn-primary btn-sm">Unfollow workout plan</a>
+{% else %}
+    <div class="p-3">
+        <div class="formcenter w-25">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Set Starting Date</legend>
+                    {{ form|crispy }}
+                </fieldset>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+<div class="p-3">
+    {% for week in week_list %}
+        <h3>Week {{ week.grouper }}</h3>
+        <table class="table w-25 text-left">
+            <tbody>
+                {% for workout in workouts %}
+                    {% if week.grouper == workout.plan_week %}
+                        <tr>
+                            <td class="align-middle">
+                                Day {{ workout.plan_day }}: 
+                            </td>
+                            <td class="align-middle">
+                                <a href="{{ workout.get_absolute_url }}">{{ workout }}</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}

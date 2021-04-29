@@ -2,7 +2,7 @@
 {% block content %}
 <div class="p-3">
     <h3>{{ workout.title }}</h3>
-    <p>{{ workout.date_posted|date:"F d, Y" }}</p>
+    <p>{{ workout.workout_day|date:"F d, Y" }}</p>
     {% if workout.user == user %}
         <p>
             <a href="{% url 'add_exercise' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding fas fa-plus-circle"></i>Add exercise to workout</a>

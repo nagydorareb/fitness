@@ -16,6 +16,7 @@ urlpatterns = [
 
     # Add exercise set to workout
     path('workout/<int:workout_pk>/add/', views.add_exercise, name='add_exercise'),
+    path('workout/<int:workout_pk>/<int:exercise_pk>/add/', views.add_exercise, name='add_exercise'),
     path('workout/<int:workout_pk>/<int:pk>/', views.exercise_set_view, name='exercise_set_detail'),
     path('workout/<int:workout_pk>/<int:pk>/update/', views.exercise_set_update, name='exercise_update'),
     path('workout/<int:workout_pk>/<int:pk>/delete/', views.exercise_set_delete, name='exercise_delete'),

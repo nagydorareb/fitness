@@ -8,15 +8,15 @@
           </button>
         </div>
         <div class="modal-body">
-            <p class="float-left"><img src="{{ exercise.image.url }}" width="400"></p>
-            <div class="p-3">
-                <h6>Description:</h6>
-                <p>{{ exercise.description }}</p>
+          <div class="d-flex">
+            <div class="mr-auto p-1"><img src="{{ exercise.image.url }}" width="300"></div>
+            <div class="p-2 text-justify">
+                  <h6>Description:</h6>
+                  <p>{{ exercise.description }}</p>
+                  <h6>Primary muscle group:</h6>
+                  <p>{{ exercise.get_focus_display }}</p>
             </div>
-            <div class="p-3">
-                <h6>Primary muscle group:</h6>
-                <p>{{ exercise.get_focus_display }}</p>
-            </div>
+          </div>
         </div>
       </div>
     </div>
