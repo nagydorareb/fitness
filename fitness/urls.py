@@ -39,6 +39,9 @@ urlpatterns = [
     path('programs/', WorkoutPlanListView.as_view(), name='workout-programs'),
     path('programs/<int:pk>', workouts_views.workoutplan_detail, name='workout-program-detail'),
     path('programs/<int:pk>/unfollow', workouts_views.unfollow_workoutplan, name='workout-program-unfollow'),
+    path('programs/<int:pk>/follow', workouts_views.follow_workoutplan, name='workout-program-follow'),
+    # path('programs/<int:pk>/follow', FollowWorkoutPlan.as_view(), name='workout-program-follow'),
+
 ]
 
 if settings.DEBUG:

@@ -67,6 +67,7 @@ class WorkoutPlan(models.Model):
     main_goal = models.CharField(max_length=100, choices = MAINGOAL)
     image = models.ImageField(default='default_exercise.jpg', upload_to='program_pics', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.title

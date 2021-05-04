@@ -75,6 +75,72 @@
    position: relative;
  }
 
+
+.handle {
+  display: inline-block;
+  border-top: 0px solid var(--dark);
+  width: 30px;
+  padding-top: 5px;
+  cursor: grab;
+}
+.handle:after, .handle:before {
+  display: block;
+  content: "";
+  padding-top: 5px;
+  border-top: 0px solid var(--dark);
+}
+.handle:hover, .handle:hover:before, .handle:hover:after {
+  border-color: var(--primary);
+}
+.handle:active, .handle:active:before, .handle:active:after {
+  cursor: grabbing;
+}
+
+
+ /* Dropdown Button */
+.dropbtn {
+  background-color: transparent;
+  color: black;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  bottom: 20px;
+  z-index: 1;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: transparent;}
+
  .pcontainter {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -475,8 +541,8 @@
  }
  
  th {
-   text-align: inherit;
-   text-align: -webkit-match-parent;
+  text-align: inherit;
+  text-align: -webkit-match-parent;
  }
  
  label {
@@ -5955,6 +6021,7 @@
    height: 100%;
    overflow: hidden;
    outline: 0;
+   vertical-align: middle;
  }
  
  .modal-dialog {
@@ -5962,6 +6029,7 @@
    width: auto;
    margin: 0.5rem;
    pointer-events: none;
+   vertical-align: middle;
  }
  
  .modal.fade .modal-dialog {

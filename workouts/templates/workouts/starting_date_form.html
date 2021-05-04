@@ -1,9 +1,7 @@
-<div class="modal" id="popup" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-
-
-        <div class="formcenter">
+{% load crispy_forms_tags %}
+<div class="modal" id="popup_{{plan.id}}" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog w-25 modal-dialog-centered" role="document">
+      <div class="modal-content p-3">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <fieldset class="form-group">
@@ -14,9 +12,7 @@
                     <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
             </form>
-        </div>
-
-
+        
       </div>
     </div>
 </div>

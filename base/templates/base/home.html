@@ -8,7 +8,7 @@
             <p>Here you can view, create and edit your own workouts!</p>
             <p>
                 <a href="{% url 'add' %}" class="btn btn-primary"><i class="fas fa-plus lilpadding"></i>Add workout</a>
-                <a href="#" class="btn btn-primary"><i class="far fa-heart lilpadding"></i>Favorite workouts</a>
+                <a href="{% url 'workout_favorites' %}" class="btn btn-primary"><i class="far fa-heart lilpadding"></i>Favorite workouts</a>
             </p>
             <div class="tooltipp">How can I create a workout?
                 <span class="tooltiptextp">
@@ -40,48 +40,62 @@
         </div>
     </div>
 
-    <div class="container">
-        {% for workout in workouts %}
-            {% if forloop.first %}
-                <div class="row">
-            {% endif %}
-                    <div class="col-md-3 wcontainer">
-                        {% if workout.training_type == "ST" %}
-                            <i class="fas fa-dumbbell fa-3x lilpadding"></i>
-                        {% elif workout.training_type == "HI" %}
-                            <i class="fas fa-heartbeat fa-3x lilpadding"></i>
-                        {% elif workout.training_type == "CA" %}
-                            <i class="fas fa-running fa-3x lilpadding"></i>
-                        {% elif workout.training_type == "YO" %}
-                            <i class="fas fa-spa fa-3x lilpadding"></i>
-                        {% endif %}
-                        <div class="pt-2"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
-                        
-                        <div class="d-flex">
-                            <div>
-                                <small>{{ workout.workout_day|date:"F d, Y" }}</small>
-                            </div>
-                            <div class="dropdown ml-auto">
-                                <button class="btn btn-secondary btn-sm dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
-                                    <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
-                                    <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+    {% if workouts %}    
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                  <th scope="col" class="text-left">Training Type</th>
+                  <th scope="col" class="text-left">Workout Title</th>
+                  <th scope="col" class="text-left">Workout Day</th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+            <tbody>
+                {% for workout in workouts %}
+                    <tr class="table-secondary">
+                        <td class="align-middle text-left p-4">
+                            {% if workout.training_type == "ST" %}
+                                <i class="fas fa-dumbbell lilpadding"></i>
+                            {% elif workout.training_type == "HI" %}
+                                <i class="fas fa-heartbeat lilpadding"></i>
+                            {% elif workout.training_type == "CA" %}
+                                <i class="fas fa-running lilpadding"></i>
+                            {% elif workout.training_type == "YO" %}
+                                <i class="fas fa-spa lilpadding"></i>
+                            {% endif %}
+                        </td>
+                        <td class="align-middle text-left pl-4"><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></td>
+                        <td class="align-middle text-left pl-4">{{ workout.workout_day|date:"F d, Y" }}</td>
+                        <td class="align-middle text-left">
+                            {% if workout.workout_plan %}
+                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i>
+                            {% endif %}
+                            {% if user in workout.favorites.all %}
+                                <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding fas fa-heart"></i></a>
+                            {% else %}
+                                <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding far fa-heart"></i></a>
+                            {% endif %}
+                        </td>
+                        <td class="align-middle">
+                            <div class="dropdown">
+                                <button class="dropbtn"><i class="fas fa-ellipsis-h"></i></button>
+                                <div class="dropdown-content text-left">
+                                    <a href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>Details</a>
+                                {% if not workout.workout_plan %}
+                                    <a href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
+                                    <a href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+                                {% endif %}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-            {% if forloop.counter|divisibleby:3 %}
-                </div>
-                <div class="row">
-            {% endif %}
-            {% if forloop.last %}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <em><h5>No workouts found</h5></em>
+    {% endif %}
         
 {% if workouts.has_other_pages %}
     <div class="pt-3">
@@ -134,6 +148,24 @@
           content.style.maxHeight = content.scrollHeight + "px";
         } 
       });
+    }
+
+    function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+    if (!event.target.matches('.drop{{workout.id}}')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+        }
+    }
     }
 </script>
 {% endblock %}

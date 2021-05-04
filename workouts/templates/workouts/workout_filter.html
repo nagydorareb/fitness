@@ -5,8 +5,8 @@
 <div class="p-3 pagesize">
     <h1 class="display-4 text-center">Search Workouts</h1>
     <p class="text-center">Find workouts by training type or body focus</p>
-    <div class="w-75 container">
-        <div class="row">
+    <div class="container ">
+        <div class="row d-flex justify-content-center">
             <div class="col-9">
                 <div class="container">
                     {% for workout in workouts %}
@@ -14,29 +14,35 @@
                             <div class="row">
                         {% endif %}
                                 <div class="col-12 wcontainer">
-                                    {% if workout.training_type == "ST" %}
-                                        <i class="fas fa-dumbbell fa-3x lilpadding"></i>
-                                    {% elif workout.training_type == "HI" %}
-                                        <i class="fas fa-heartbeat fa-3x lilpadding"></i>
-                                    {% elif workout.training_type == "CA" %}
-                                        <i class="fas fa-running fa-3x lilpadding"></i>
-                                    {% elif workout.training_type == "YO" %}
-                                        <i class="fas fa-spa fa-3x lilpadding"></i>
-                                    {% endif %}
-                                    <div class="pt-2"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
                                     
-                                    <div class="d-flex">
-                                        <div class="mr-auto">
-                                            <small>{{ workout.workout_day|date:"F d, Y" }}</small>
+                                    
+                                    <div class="d-flex justify-content-between text-left">
+                                        <div class="pt-2">
+                                            {% if workout.training_type == "ST" %}
+                                                <i class="fas fa-dumbbell fa-3x lilpadding"></i>
+                                            {% elif workout.training_type == "HI" %}
+                                                <i class="fas fa-heartbeat fa-3x lilpadding"></i>
+                                            {% elif workout.training_type == "CA" %}
+                                                <i class="fas fa-running fa-3x lilpadding"></i>
+                                            {% elif workout.training_type == "YO" %}
+                                                <i class="fas fa-spa fa-3x lilpadding"></i>
+                                            {% endif %}
                                         </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-secondary btn-sm dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="pt-4"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
+                                        
+                                        <div class="pt-4">
+                                            {{ workout.workout_day|date:"F d, Y" }}
+                                        </div>
+                                        <div class="dropdown pt-2">
+                                            <button class="btn btn-secondary dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-cog"></i>
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                 <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
-                                                <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
-                                                <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+                                                {% if not workout.workout_plan %}
+                                                    <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
+                                                    <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
+                                                {% endif %}
                                             </div>
                                         </div>
 

@@ -30,7 +30,7 @@ class WorkoutCalendar(HTMLCalendar):
                 cssclass += ' filled'
                 body = ['<br>']
                 for workout in self.workouts[day]:
-                    if workout.workout_plan.exists():
+                    if workout.workout_plan:
                         body.append('<a href="%s">' % workout.get_absolute_url())
                         body.append('<span style="color: mediumslateblue;">')
                         body.append(self.add_icon(workout.training_type))

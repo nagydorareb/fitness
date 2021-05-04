@@ -7,8 +7,8 @@ class SetForm(ModelForm):
 
     class Meta:
         model = ExerciseSet
-        fields = ['exercise', 'set_num', 'rep_num', 'rep_type', 'weight_num', 'weight_type']
-        exclude = ('workout',)
+        # fields = ['exercise', 'set_num', 'rep_num', 'rep_type', 'weight_num', 'weight_type']
+        exclude = ('workout', 'order')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,8 +20,8 @@ class SetForm(ModelForm):
 class SetUpdateForm(ModelForm):
     class Meta:
         model = ExerciseSet
-        fields = ['exercise', 'set_num', 'rep_num', 'rep_type', 'weight_num', 'weight_type']
-        exclude = ('workout',)
+        # fields = ['exercise', 'set_num', 'rep_num', 'rep_type', 'weight_num', 'weight_type']
+        exclude = ('workout', 'order')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -49,4 +49,5 @@ class WorkoutForm(ModelForm):
         fields = ['title', 'workout_day', 'training_type', 'body_focus']
         widgets = {'workout_day' : DateInput()}
 
-
+class OrderingForm(forms.Form):
+    ordering = forms.CharField()

@@ -38,10 +38,12 @@ class Workout(models.Model):
     training_type = models.CharField(max_length=100, choices = TRAINING)
     body_focus = models.CharField(max_length=100, choices = BODYFOCUS)
 
-    workout_plan = models.ManyToManyField(WorkoutPlan, blank=True)
+    workout_plan = models.ForeignKey(WorkoutPlan, blank=True, on_delete=models.SET_NULL, null=True)
     plan_week = models.PositiveIntegerField(blank=True, null=True)
     plan_day = models.PositiveIntegerField(blank=True, null=True)
     plan_user = models.ManyToManyField(User, related_name="workouts", blank=True)
+
+    favorites = models.ManyToManyField(User, related_name='favorite', default=None, blank=True)
 
     def __str__(self):
         return self.title
@@ -51,6 +53,9 @@ class Workout(models.Model):
 
     def get_owner_object(self):
         return self
+
+    """ def get_favorite_api_url(self):
+        return reverse('fav_api_add', kwargs={'pk': self.pk}) """
 
     class Meta:
         ordering = ["-workout_day", ]
@@ -100,8 +105,22 @@ class Exercise(models.Model):
 
     class Meta:
         ordering = ["name", ]
+
+class MainExerciseSet(models.Model):
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    order = models.IntegerField(blank=False, default=100_000)
+
+    def __str__(self):
+        return f"{self.exercise.name}"
+
+    def get_absolute_url(self):
+        return reverse('exercise_set_detail', kwargs={'pk': self.pk})
+
+    class Meta():
+        ordering = ['order',]
         
-class ExerciseSet(models.Model):
+class ExerciseSet(MainExerciseSet):
     REP = 'RE'
     SEC = 'SE'
     KG = 'KG'
@@ -119,16 +138,22 @@ class ExerciseSet(models.Model):
     DEFAULT_SETS = 4
     MAX_SETS = 10
 
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    # workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    # exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     set_num = models.PositiveIntegerField(default=DEFAULT_SETS, verbose_name="Number of sets")
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     rep_num = models.IntegerField(verbose_name="Repetitions")
     rep_type = models.CharField(max_length = 2, choices = REP_OR_SEC, default=REP, verbose_name="Unit") # repetitions or seconds
-    weight_num = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Weight")
+    weight_num = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Weight", default=0)
     weight_type = models.CharField(max_length = 2, choices = KG_OR_BW, default=KG, verbose_name="Unit")
+
+    # order = models.IntegerField(blank=False, default=100_000)
+    rest_time = models.IntegerField(verbose_name="Rest Time", default=0)
 
     def __str__(self):
         return f"{self.exercise.name}: {self.set_num} set(s) of {self.rep_num} {self.get_rep_type_display()} {self.weight_num} {self.get_weight_type_display()}"
 
     def get_absolute_url(self):
         return reverse('exercise_set_detail', kwargs={'pk': self.pk})
+
+    class Meta():
+        ordering = ['order',]

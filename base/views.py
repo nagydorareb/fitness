@@ -1,19 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from .models import Workout, ExerciseSet, Exercise
 from django.contrib.auth.models import User
 from django.views.generic import ( 
-    DetailView,
     CreateView,
     UpdateView,
     DeleteView,
 )
+from django.views import View
 from django.http import (
     HttpResponseForbidden,
-    HttpResponseRedirect
+    HttpResponseRedirect,
+    JsonResponse,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .forms import SetForm, WorkoutForm, SetUpdateForm
+from .forms import SetForm, WorkoutForm, SetUpdateForm, OrderingForm
 from django.urls import reverse
 from django.contrib import messages
 
@@ -21,7 +23,6 @@ import calendar
 from calendar import HTMLCalendar
 from django.utils.safestring import mark_safe
 import json
-from django.http import JsonResponse
 
 from .helpers import WorkoutCalendar
 
@@ -31,6 +32,12 @@ from .filter import WorkoutDateFilter
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
+from django.db import transaction
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+
 def index(request):
     return render(request, 'base/index.html')
 
@@ -39,6 +46,7 @@ def home(request):
     template_data = {}
     user = request.user
     date_filter = WorkoutDateFilter(request.GET, queryset=Workout.objects.filter(Q(user=request.user) | Q(plan_user=request.user)))
+
     template_data['date_filter'] = date_filter
     template_data['user'] = user
 
@@ -54,8 +62,7 @@ def home(request):
         workouts = paginator.page(paginator.num_pages)
         
     template_data['paginator'] = paginator
-    template_data['workouts'] = workouts
-    
+    template_data['workouts'] = workouts    
     return render(request, 'base/home.html', template_data)
 
 @login_required
@@ -63,10 +70,72 @@ def view(request, pk):
     template_data = {}
     workout = get_object_or_404(Workout, pk=pk)
     exercise = ExerciseSet.objects.filter(workout_id=pk)
+    fav = bool
+
+    if workout.favorites.filter(id=request.user.id).exists():
+        fav = True
+
     template_data['workout'] = workout
     template_data['exercises'] = exercise
+    template_data['fav'] = fav
     
     return render(request, 'base/detail.html', template_data)
+
+@login_required
+def fav_add(request, pk):
+    workout = get_object_or_404(Workout, pk=pk)
+    if workout.favorites.filter(id=request.user.id).exists():
+        workout.favorites.remove(request.user)
+    else:
+        workout.favorites.add(request.user)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@login_required
+def workout_favorites(request):
+    workouts = Workout.objects.filter(favorites=request.user)
+    return render(request, 'base/favorites.html', {'workouts': workouts})
+
+""" class WorkoutFavoriteAPIToggle(APIView):
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk, format=None):
+        # pk_ = self.kwargs.get("pk")
+        obj = get_object_or_404(Workout, pk=pk)
+        url_ = obj.get_absolute_url()
+        user = self.request.user
+        updated = False
+        favorited = False
+        if user.is_authenticated:
+            if user in obj.favorites.all():
+                favorited = False
+                obj.favorites.remove(user)
+            else:
+                favorited = True
+                obj.favorites.add(user)
+            updated = True
+        data = {
+            "updated": updated,
+            "favorited": favorited
+        }
+        return Response(data) """
+
+@require_POST
+def save_new_ordering(request, pk):
+    form = OrderingForm(request.POST)
+
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+
+        with transaction.atomic():
+            current_order = 1
+            for id in ordered_ids:
+                exerciseset = ExerciseSet.objects.get(id__exact=id)
+                exerciseset.order = current_order
+                exerciseset.save()
+                current_order += 1
+
+    return HttpResponseRedirect(reverse('workout_detail', kwargs={'pk': pk}))
 
 @login_required
 def workout_calendar(request, year=None, month=None):

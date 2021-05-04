@@ -12,6 +12,9 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from datetime import date, timedelta
+# from bootstrap_modal_forms.generic import BSModalUpdateView
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 def workouts_filter(request):
     template_data = {}
@@ -44,6 +47,15 @@ class WorkoutPlanListView(ListView):
 
 def workoutplan_detail(request, pk):
     template_data = {}
+    plan = get_object_or_404(WorkoutPlan, pk=pk)
+    workouts = Workout.objects.filter(workout_plan__id=pk).order_by('plan_week', 'plan_day')
+
+    for workout in workouts:
+        if workout.plan_user.filter(username=request.user.username).exists():
+            template_data['following'] = True
+        else:
+            template_data['following'] = False
+
     if request.method == 'POST':
         workouts_to_update = Workout.objects.filter(workout_plan__id=pk)
         form = StartingDateForm(request.POST)
@@ -70,24 +82,15 @@ def workoutplan_detail(request, pk):
                     workout.plan_user.add(request.user)
                     w.workout_day = new_date
                     w.save()
-
             messages.success(request, f'This workout plan has been added to your calendar')
             return HttpResponseRedirect(reverse('workout-program-detail', kwargs={'pk': pk}))
-
     else:
-        plan = get_object_or_404(WorkoutPlan, pk=pk)
-        workouts = Workout.objects.filter(workout_plan__id=pk).order_by('plan_week', 'plan_day')
-
-        for workout in workouts:
-            if workout.plan_user.filter(username=request.user.username).exists():
-                template_data['following'] = True
-            else:
-                template_data['following'] = False
-
         form = StartingDateForm()
-        template_data['form'] = form
-        template_data['workouts'] = workouts
-        template_data['plan'] = plan
+
+    form = StartingDateForm()
+    template_data['form'] = form
+    template_data['workouts'] = workouts
+    template_data['plan'] = plan
 
     return render(request, 'workouts/workoutplan_detail.html', template_data)
 
@@ -101,4 +104,6 @@ def unfollow_workoutplan(request, pk):
 
     messages.success(request, f'You have unsubscribed from this workout plan')
     return HttpResponseRedirect(reverse('workout-program-detail', kwargs={'pk': pk}))
-    
+
+def follow_workoutplan(request, pk):
+    return render(request, 'workouts/starting_date_form.html')
