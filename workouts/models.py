@@ -2,8 +2,6 @@ from django.db import models
 from PIL import Image
 from django.utils import timezone
 
-# Create your models here.
-
 class WorkoutPlan(models.Model):
     BEGINNER = 'BE'
     INTERMEDIATE = 'IN'
@@ -65,7 +63,7 @@ class WorkoutPlan(models.Model):
     time_per_workout = models.CharField(max_length=100, choices = TIMEPERWORKOUT)
     equipment = models.CharField(max_length=100, choices = EQUIPMENT)
     main_goal = models.CharField(max_length=100, choices = MAINGOAL)
-    image = models.ImageField(default='default_exercise.jpg', upload_to='program_pics', blank=True)
+    image = models.ImageField(default='default_exercise.jpg', upload_to='program_pics')
     date_posted = models.DateTimeField(default=timezone.now)
     description = models.TextField(blank=True)
 

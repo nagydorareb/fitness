@@ -4,55 +4,85 @@
 <div class="w-75 p-3 pagesize">
     <h1 class="text-center display-4">Search Exercises by Body Part</h1>
     <p>Click on the exercise name for details!</p>
-
     <div class="container">
         <div class="row">
-            <div class="col-9">
+            <div class="col-8">
                 {% for obj in filter.qs %}
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-3">
-                            <img src="{{ obj.image.url }}" width=100px alt="Exercise-Image">
-                        </div>
-                        <div class="col-6">
-                            <h5><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}">{{ obj.name }}</a></h5>
-                        </div>
-                        <div class="col-3">
-                            <ul class="dropdown-option">
-                                <li>
-                                    <div><i class="fas fa-ellipsis-h"></i></div>
-                                    <!-- First level sub dropdown -->
-                                    <ul>
-                                        <li>
-                                            <div><i class="lilpadding fas fa-plus"></i>Add to workout<i class="fas fa-chevron-right pt-1 float-right"></i></div>
-                                            <!-- Second level sub dropdown -->
-                                            <ul class="p-1">
-                                                {% for workout in workouts %}
-                                                    <li><a href="{% url 'add_exercise' workout.id obj.id %}">{{ workout.title }}</li></a>
-                                                {% endfor %}
-                                            </ul>
-                                        </li>
-                                        <li><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}"><i class="lilpadding far fa-eye"></i>View details</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <img src="{{ obj.image.url }}" width=100px alt="Exercise-Image">
+                            </div>
+                            <div class="col-6">
+                                <h5><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}">{{ obj.name }}</a></h5>
+                            </div>
+                            <div class="col-3">
+                                <ul class="dropdown-option">
+                                    <li>
+                                        <div><i class="fas fa-ellipsis-h"></i></div>
+                                        <!-- First level sub dropdown -->
+                                        <ul>
+                                            {% if workouts %}
+                                                <li>
+                                                    <div><i class="lilpadding fas fa-plus"></i>Add to workout<i class="fas fa-chevron-right pt-1 float-right"></i></div>
+                                                    <!-- Second level sub dropdown -->
+                                                    <ul class="p-1">
+                                                        {% for workout in workouts %}
+                                                            <li><a href="{% url 'add_exercise' workout.id obj.id %}">{{ workout.title }}</li></a>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </li>
+                                            {% endif %}
+                                            <li><a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{obj.id}}" data-popup-url="{% url 'exercise-detail' obj.id %}"><i class="lilpadding far fa-eye"></i>View details</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% include "exercises/exercise_detail.html" with exercise=obj %}
+                    {% include "exercises/exercise_detail.html" with exercise=obj %}
                 {% endfor %}
             </div>
-            <div class="col-3">
-                <form method="get">
-                    <fieldset class="form-group">
-                            {{ filter.form|crispy }}
-                    </fieldset>
-                    <div class="form-group">
-                        <button class="btn btn-primary btn-sm" type="submit"><i class="lilpadding fas fa-search"></i>Search</button>
-                    </div>
-                </form>
+            <div class="col-4">
+                <div class="pb-2 text-white">
+                    {% for focus in focus_names %}
+                        <span class="badge bg-dark">{{ focus }}</span>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-dark collapsible"><i class="fas fa-filter lilpadding"></i>Filter</button>
+                <div class="content">
+                    <p>
+                        <form method="get">
+                            <fieldset class="form-group">
+                                    {{ filter.form|crispy }}
+                            </fieldset>
+                            <div class="form-group float-right pb-3">
+                                <button class="btn btn-secondary btn-sm" type="submit">Filter</button>
+                            </div>
+                        </form>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+</script>
 {% endblock %}

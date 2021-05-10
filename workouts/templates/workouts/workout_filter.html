@@ -1,84 +1,80 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
 {% crispy filter.form filter.form.helper %}
+{% load extras %}
 {% block content %}
 <div class="p-3 pagesize">
     <h1 class="display-4 text-center">Search Workouts</h1>
     <p class="text-center">Find workouts by training type or body focus</p>
+    <p class="text-center">
+        <i class="lilpadding far fa-user"></i>Other user's workout
+        <i class="fas fa-clipboard-list lilpadding pl-4"></i>Included in workout program
+    </p>
     <div class="container ">
         <div class="row d-flex justify-content-center">
-            <div class="col-9">
+            <div class="col-10">
                 <div class="container">
-                    {% for workout in workouts %}
-                        {% if forloop.first %}
-                            <div class="row">
-                        {% endif %}
-                                <div class="col-12 wcontainer">
-                                    
-                                    
-                                    <div class="d-flex justify-content-between text-left">
-                                        <div class="pt-2">
-                                            {% if workout.training_type == "ST" %}
-                                                <i class="fas fa-dumbbell fa-3x lilpadding"></i>
-                                            {% elif workout.training_type == "HI" %}
-                                                <i class="fas fa-heartbeat fa-3x lilpadding"></i>
-                                            {% elif workout.training_type == "CA" %}
-                                                <i class="fas fa-running fa-3x lilpadding"></i>
-                                            {% elif workout.training_type == "YO" %}
-                                                <i class="fas fa-spa fa-3x lilpadding"></i>
+                    <div class="pt-2">
+                        {% if workouts %}    
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                  <th scope="col" class="text-left">Training Type</th>
+                                  <th scope="col" class="text-left">Workout Title</th>
+                                  <th scope="col" class="text-left">Author</th>
+                                </tr>
+                              </thead>
+                            <tbody>
+                                {% for workout in workouts %}
+                                    <tr class="table-secondary">
+                                        <td class="align-middle text-left p-4">
+                                            {% get_type_icon workout.training_type %}
+                                        </td>
+                                        <td class="align-middle text-left pl-4"><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></td>
+                                        <td class="align-middle text-left pl-5">
+                                            {% if workout.workout_plan %}
+                                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i></a>
+                                            {% elif user == workout.user %}
+                                                <img src="{{ user.profile.image.url }}" width=20px alt="Profile-Image" class="rounded-circle" title="My workout">
+                                            {% else %}
+                                                <span title="Other user's workout"><i class="lilpadding far fa-user"></i></span>
                                             {% endif %}
-                                        </div>
-                                        <div class="pt-4"><h5><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></h5></div>
-                                        
-                                        <div class="pt-4">
-                                            {{ workout.workout_day|date:"F d, Y" }}
-                                        </div>
-                                        <div class="dropdown pt-2">
-                                            <button class="btn btn-secondary dropdown-toggle bg-transparent" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-cog"></i>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item" href="{{ workout.get_absolute_url }}"><i class="lilpadding far fa-eye"></i>View workout details</a>
-                                                {% if not workout.workout_plan %}
-                                                    <a class="dropdown-item" href="{% url 'update' workout.id %}"><i class="lilpadding far fa-edit"></i>Edit</a>
-                                                    <a class="dropdown-item" href="{% url 'delete' workout.id %}"><i class="lilpadding far fa-trash-alt"></i>Delete</a>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                        {% if forloop.counter|divisibleby:1 %}
-                            </div>
-                            <div class="row">
-                        {% endif %}
-                        {% if forloop.last %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                            <div>
+                                <em><h5>No workouts found</h5></em>
                             </div>
                         {% endif %}
-                    {% endfor %}
+                    </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <form method="get">
+                    <legend>Filters</legend>
                     <fieldset class="form-group">
                             {{ filter.form|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-primary" type="submit"><i class="lilpadding fas fa-search"></i>Search</button>
+                        <button class="btn btn-primary btn-sm" type="submit"><i class="lilpadding fas fa-filter"></i>Filter</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-
     {% if workouts.has_other_pages %}
         <div class="pt-3">
             <ul class="pagination justify-content-center">
             {% if workouts.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ workouts.previous_page_number }}">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=1 %}">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.previous_page_number %}">&lsaquo;</a></li>
             {% else %}
                 <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">&lsaquo;</a></li>
             {% endif %}
     
             {% for i in workouts.paginator.page_range %}
@@ -87,13 +83,15 @@
                         <a class="page-link" href="#"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
                     </li>
                 {% else %}
-                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    <li class="page-item"><a class="page-link" href="?{% param_replace page=i %}">{{ i }}</a></li>
                 {% endif %}
             {% endfor %}
     
             {% if workouts.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ workouts.next_page_number }}">&raquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.next_page_number %}">&rsaquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.paginator.num_pages %}">&raquo;</a></li>
             {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&rsaquo;</a></li>
                 <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
             {% endif %}
             </ul>

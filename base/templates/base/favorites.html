@@ -1,13 +1,12 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
+{% load extras %}
 {% block content %}
 <div class="p-3">
-    <h1 class="display-4">Your favorite workouts</h1>
+    <h1 class="display-4">Favorite workouts</h1>
     <div class="p-2">
         <a href="{% url 'home' %}">Back to your workouts</a>
-    </div>
-    
-        
+    </div>  
     {% if workouts %}
         <table class="table table-hover">
             <thead>
@@ -23,26 +22,20 @@
                 {% for workout in workouts %}
                     <tr class="table-secondary">
                         <td class="align-middle text-left p-4">
-                            {% if workout.training_type == "ST" %}
-                                <i class="fas fa-dumbbell lilpadding"></i>
-                            {% elif workout.training_type == "HI" %}
-                                <i class="fas fa-heartbeat lilpadding"></i>
-                            {% elif workout.training_type == "CA" %}
-                                <i class="fas fa-running lilpadding"></i>
-                            {% elif workout.training_type == "YO" %}
-                                <i class="fas fa-spa lilpadding"></i>
-                            {% endif %}
+                            {% get_type_icon workout.training_type %}
                         </td>
                         <td class="align-middle text-left pl-4"><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></td>
-                        <td class="align-middle text-left pl-4">{{ workout.workout_day|date:"F d, Y" }}</td>
+                        <td class="align-middle text-left pl-4">{{ workout.workout_day|date:"F d, Y" }}
+                            <small class="text-muted">{{ workout.workout_day|date:"D" }}</small>
+                        </td>
                         <td class="align-middle text-left">
-                            {% if workout.workout_plan %}
-                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i>
-                            {% endif %}
                             {% if user in workout.favorites.all %}
                                 <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding fas fa-heart"></i></a>
                             {% else %}
                                 <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding far fa-heart"></i></a>
+                            {% endif %}
+                            {% if workout.workout_plan %}
+                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i>
                             {% endif %}
                         </td>
                         <td class="align-middle">
@@ -61,15 +54,10 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% else %}
+    {% else %}
         <div class="p-5">
             <em><h5>No workouts found</h5></em>
         </div>
-        {% endif %}
-
+    {% endif %}
 </div>
-
 {% endblock content %}
-
-{% block script %}
-{% endblock %}

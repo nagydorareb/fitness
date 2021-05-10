@@ -3,9 +3,15 @@ from base.models import Workout
 from django.db import models
 from django import forms
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column
+
 class WorkoutFilter(django_filters.FilterSet):
-    training_type = django_filters.ChoiceFilter(choices=Workout.TRAINING, empty_label="All")
-    body_focus = django_filters.ChoiceFilter(choices=Workout.BODYFOCUS, empty_label="All")
+    """
+    Filter workouts by training type (e.g. HIIT, Strength...) and/or body focus (e.g. Upper, Lower body...)
+    """
+    training_type = django_filters.MultipleChoiceFilter(choices=Workout.TrainingType.choices, widget=forms.CheckboxSelectMultiple)
+    body_focus = django_filters.MultipleChoiceFilter(choices=Workout.BodyFocus.choices, widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Workout

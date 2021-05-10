@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 def register(request):
+    """
+    Registration form view
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -18,6 +21,11 @@ def register(request):
 
 @login_required
 def profile(request):
+    """
+    Profile information view for logged in user
+
+    Users can update their profile information (username, email, profile picture)
+    """
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
@@ -32,10 +40,9 @@ def profile(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
-
-    context = {
+    template_data = {
         'u_form' : u_form,
         'p_form' : p_form
     }
 
-    return render(request, 'users/profile.html', context)
+    return render(request, 'users/profile.html', template_data)

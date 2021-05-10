@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load crispy_forms_tags %}
+{% load extras %}
 {% block content %}
 <div>
     <div class="d-flex">
@@ -40,7 +41,8 @@
         </div>
     </div>
 
-    {% if workouts %}    
+    <div class="pt-4">
+        {% if workouts %}    
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -55,26 +57,20 @@
                 {% for workout in workouts %}
                     <tr class="table-secondary">
                         <td class="align-middle text-left p-4">
-                            {% if workout.training_type == "ST" %}
-                                <i class="fas fa-dumbbell lilpadding"></i>
-                            {% elif workout.training_type == "HI" %}
-                                <i class="fas fa-heartbeat lilpadding"></i>
-                            {% elif workout.training_type == "CA" %}
-                                <i class="fas fa-running lilpadding"></i>
-                            {% elif workout.training_type == "YO" %}
-                                <i class="fas fa-spa lilpadding"></i>
-                            {% endif %}
+                            {% get_type_icon workout.training_type %}
                         </td>
                         <td class="align-middle text-left pl-4"><a href="{{ workout.get_absolute_url }}">{{ workout.title }}</a></td>
-                        <td class="align-middle text-left pl-4">{{ workout.workout_day|date:"F d, Y" }}</td>
+                        <td class="align-middle text-left pl-4">{{ workout.workout_day|date:"F d, Y" }}
+                            <small class="text-muted">{{ workout.workout_day|date:"D" }}</small>
+                        </td>
                         <td class="align-middle text-left">
-                            {% if workout.workout_plan %}
-                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i>
-                            {% endif %}
                             {% if user in workout.favorites.all %}
                                 <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding fas fa-heart"></i></a>
                             {% else %}
                                 <a href="{% url 'fav_add' workout.id %}"><i class="lilpadding far fa-heart"></i></a>
+                            {% endif %}
+                            {% if workout.workout_plan %}
+                                <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="card-link"><i class="fas fa-clipboard-list lilpadding"></i>
                             {% endif %}
                         </td>
                         <td class="align-middle">
@@ -93,16 +89,18 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-    <em><h5>No workouts found</h5></em>
-    {% endif %}
+        {% else %}
+            <em><h5>No workouts found</h5></em>
+        {% endif %}
+    </div>
+    
         
-{% if workouts.has_other_pages %}
+    {% if workouts.has_other_pages %}
     <div class="pt-3">
         <ul class="pagination justify-content-center">
         {% if workouts.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ workouts.previous_page_number }}">&lsaquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?{% param_replace page=1 %}">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.previous_page_number %}">&lsaquo;</a></li>
         {% else %}
             <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
             <li class="page-item disabled"><a class="page-link" href="#">&lsaquo;</a></li>
@@ -114,13 +112,13 @@
                     <a class="page-link" href="#"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
                 </li>
             {% else %}
-                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                <li class="page-item"><a class="page-link" href="?{% param_replace page=i %}">{{ i }}</a></li>
             {% endif %}
         {% endfor %}
 
         {% if workouts.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ workouts.next_page_number }}">&rsaquo;</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ workouts.paginator.num_pages }}">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.next_page_number %}">&rsaquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?{% param_replace page=workouts.paginator.num_pages %}">&raquo;</a></li>
         {% else %}
             <li class="page-item disabled"><a class="page-link" href="#">&rsaquo;</a></li>
             <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>
@@ -128,7 +126,6 @@
         </ul>
     </div>
 {% endif %}
-
 </div>
 
 {% endblock content %}
@@ -148,24 +145,6 @@
           content.style.maxHeight = content.scrollHeight + "px";
         } 
       });
-    }
-
-    function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-    // Close the dropdown menu if the user clicks outside of it
-    window.onclick = function(event) {
-    if (!event.target.matches('.drop{{workout.id}}')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-        }
-        }
-    }
     }
 </script>
 {% endblock %}

@@ -221,7 +221,7 @@
 .dropdown-option ul {
   /* Hidden by default */
   display: none;
-
+  z-index: 1;
   /* Absolute position */
   left: 0;
   position: absolute;
@@ -6233,6 +6233,30 @@
    }
  }
  
+ .tooltipuser {
+  position: relative;
+  display: inline-block;
+ }
+
+ .tooltipuser .tooltiptext {
+  visibility: hidden;
+  width: 100px;
+  background-color: black;
+  opacity: 0.5;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltipuser:hover .tooltiptext {
+  visibility: visible;
+}
+
  .tooltipp {
    position: relative;
    display: inline-block;

@@ -1,20 +1,17 @@
 {% extends "base/base.html" %}
 {% block content %}
 <div class="p-3"> 
-    <h1>
-        {{ workout.title }}
-        
-    </h1>
-    <p>{{ workout.workout_day|date:"F d, Y" }}</p>
+    <h1>{{ workout.title }}</h1>
+
+    {% if user_follows_plan or workout.user == user %}
+        <p>{{ workout.workout_day|date:"F d, Y" }}</p>
+    {% endif %}
 
     {% if workout.workout_plan %}
-        <div>
             <p>
                 <a href="{% url 'workout-program-detail' workout.workout_plan.id %}" class="text-info">{{ workout.workout_plan.title }}</a>
                 (Day {{ workout.plan_day }} | Week {{ workout.plan_week }})
             </p>
-            
-        </div>
     {% endif %}
 
     <form id="orderingForm" method="post" action="{% url 'ordering' workout.id %}">
@@ -29,15 +26,12 @@
             <a href="{% url 'fav_add' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding far fa-heart"></i>Add to favorites</a>
         {% endif %}
     </p>
-    
 
     {% if workout.user == user %}
         <p>
             <a href="{% url 'add_exercise' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding fas fa-plus-circle"></i>Add exercise</a>
             <a href="{% url 'update' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding far fa-edit"></i>Edit workout</a>
             <a href="{% url 'delete' workout.id %}" class="btn btn-primary btn-sm"><i class="lilpadding far fa-trash-alt"></i>Delete workout</a>
-
-            <!-- <a class="fav-btn" data-href="{{ workout.get_favorite_api_url }}" href="{{ workout.get_favorite_api_url }}">Add to favorites</a> -->
             <button id="saveOrdering" class="btn btn-primary btn-sm"><i class="far fa-save lilpadding"></i>Save order</button>
         </p>
     {% endif %}
@@ -47,13 +41,13 @@
             <thead>
                 <tr class="table-active">
                 <th scope="col"></th>
-                <th scope="col">Picture of exercise</th>
-                <th scope="col">Exercise name</th>
-                <th scope="col">Sets</th>
-                <th scope="col">Repetitions / Seconds</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Rest Time</th>
-                <th scope="col">Options</th>
+                <th scope="col" class="align-middle">Picture</th>
+                <th scope="col" class="align-middle">Exercise Name</th>
+                <th scope="col" class="align-middle">Sets</th>
+                <th scope="col" class="align-middle">Rep Unit</th>
+                <th scope="col" class="align-middle">Weight</th>
+                <th scope="col" class="align-middle">Rest Time</th>
+                <th scope="col" class="align-middle">Options</th>
                 </tr>
             </thead>
             <tbody id="exercisesets">
@@ -73,8 +67,43 @@
                             {{ exercise.rep_num }}
                             {{ exercise.get_rep_type_display }}
                         </td>
-                        <td class="align-middle">{{ exercise.weight_num }}</td>
+                        {% if exercise.weight_type == "BW" %}
+                            <td class="align-middle">{{ exercise.get_weight_type_display }}</td>
+                        {% else %}
+                            <td class="align-middle">{{ exercise.weight_num }} {{ exercise.get_weight_type_display }}</td>
+                        {% endif %}
                         <td class="align-middle">{{ exercise.rest_time }}</td>
+                        <td class="align-middle">
+                            <a href="{% url 'exercise_update' workout.id exercise.id %}"><i class="lilpadding far fa-edit"></i></a>
+                            <a href="{% url 'exercise_delete' workout.id exercise.id %}"><i class="lilpadding far fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                    {% include "exercises/exercise_detail.html" with exercise=exercise.exercise %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif simple_exercises %}
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-active">
+                <th scope="col"></th>
+                <th scope="col">Picture</th>
+                <th scope="col">Exercise name</th>
+                <th scope="col">Options</th>
+                </tr>
+            </thead>
+            <tbody id="exercisesets">
+                {% for exercise in simple_exercises %}
+                    <tr data-lookup="{{ exercise.id }}">
+                        <td class="align-middle">
+                            <span class="handle"><i class="fas fa-bars"></i></span>
+                            </td>
+                        <td class="align-middle">
+                            <img src="{{ exercise.exercise.image.url }}" width=100px alt="Exercise-Image">
+                        </td>
+                        <td class="align-middle">
+                            <a class="open-exercise-detail" href="#" data-toggle="modal" data-target="#popup_{{exercise.exercise.id}}" data-popup-url="{% url 'exercise-detail' exercise.id %}">{{ exercise.exercise.name }}</a>
+                        </td>
                         <td class="align-middle">
                             <a href="{% url 'exercise_update' workout.id exercise.id %}"><i class="lilpadding far fa-edit"></i></a>
                             <a href="{% url 'exercise_delete' workout.id exercise.id %}"><i class="lilpadding far fa-trash-alt"></i></a>
@@ -88,11 +117,7 @@
     <div class="p-5">
         <em><h5>No exercises in this workout yet</h5></em>
     </div>
-    {%  endif %}
-
-    
-   
-
+    {% endif %}
 </div>
 {% endblock content %}
 
@@ -125,34 +150,5 @@
         formInput.value = ids.join(',');
         orderingForm.submit();
     }
-
-
-/* $(document).ready(function(){
-    function updateText(btn, verb){
-        btn.text(verb)
-    }
-
-    $(".fav-btn").click(function(e){
-        e.preventDefault()
-        var this_ = $(this)
-        var favUrl = this_.attr("data-href")
-        $.ajax({
-            url: favUrl,
-            method: "GET",
-            data: {},
-            success: function(data){
-                console.log(data)
-                if (data.favorited){
-                    updateText(this_,"Remove from favorites")
-                } else {
-                    updateText(this_,"Add to favorites")
-                }
-            }, error: function(error){
-                console.log(error)
-                console.log("error")
-            }
-        })
-    })
-}) */
 </script>
 {% endblock script %}

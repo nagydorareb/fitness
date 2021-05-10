@@ -1,12 +1,13 @@
 from django import forms
 from base.models import Exercise
-from django.forms import ModelForm, ModelChoiceField
+from django.forms import ModelForm
 
 class ExerciseCreateForm(forms.ModelForm):
-    # focus = ModelChoiceField(queryset=Exercise.FOCUS, empty_label="Choose a focus...")
-    # focus = forms.ChoiceField(choices=Exercise.FOCUS, placeholder="Choose a focus...", required=True)
+    """
+    Form for creating exercise
+    """
     blank_choice = [('', 'Choose a focus...')] 
-    focus = forms.ChoiceField(choices=blank_choice + Exercise.FOCUS)
+    focus = forms.ChoiceField(choices=blank_choice + Exercise.Focus.choices)
     class Meta:
         model = Exercise
         fields = [

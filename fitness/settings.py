@@ -32,13 +32,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
-    'bootstrap_modal_forms',
     'django_extensions',
-    'widget_tweaks',
-    'workouts',
+    'bootstrap_modal_forms',
     'django_filters',
     'crispy_forms',
+    'workouts',
     'exercises',
     'users',
     'base',

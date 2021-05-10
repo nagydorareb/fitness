@@ -7,15 +7,32 @@ from django.contrib import messages
 
 @login_required
 def exercise_filter(request):
+    """
+    View for looking up exercises by body focus (chest, back, legs, ...)
+
+    User-created workouts are needed for adding exercise through Exercise Bank
+    """
     template_data = {}
-    f = ExerciseFilter(request.GET, queryset=Exercise.objects.all())
+    focus_names = []
+    filter_ = ExerciseFilter(request.GET, queryset=Exercise.objects.all())
     workouts = Workout.objects.filter(user=request.user)
-    template_data['filter'] = f
+
+    if filter_:
+        values = request.GET.getlist('focus')
+        for v in values:
+            focus_names.append(Exercise.Focus(v).label)
+
+    template_data['filter'] = filter_
     template_data['workouts'] = workouts
+    template_data['focus_names'] = focus_names
+
     return render(request, 'exercises/exercise_filter.html', template_data)
 
 @login_required
 def exercise_create(request):
+    """
+    View for creating exercises
+    """
     if not request.user.is_authenticated:
         return render(request, 'base/index.html')
     else:
@@ -27,12 +44,17 @@ def exercise_create(request):
             exercise.save()
             messages.success(request, f'The exercise has been created')
             return redirect('exercise-filter')
-        context = {
+        template_data = {
             "form": form,
         }
-        return render(request, 'exercises/exercise_form.html', context)
+        return render(request, 'exercises/exercise_form.html', template_data)
 
 def exercise_detail(request, pk):
+    """
+    View for exercise detail
+
+    Shows up as modal
+    """
     template_data = {}
     exercise = get_object_or_404(Exercise, pk=pk)
     template_data['exercise'] = exercise
