@@ -28,7 +28,9 @@
                                                     <!-- Second level sub dropdown -->
                                                     <ul class="p-1">
                                                         {% for workout in workouts %}
-                                                            <li><a href="{% url 'add_exercise' workout.id obj.id %}">{{ workout.title }}</li></a>
+                                                            <li><a href="{% url 'add_exercise' workout.id obj.id %}">{{ workout.title }} 
+                                                                <small class="text-muted">{{ workout.workout_day|date:"m.d." }}</small>
+                                                            </li></a>
                                                         {% endfor %}
                                                     </ul>
                                                 </li>

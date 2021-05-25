@@ -34,9 +34,9 @@ class WorkoutPlan(models.Model):
     FOURTYFIVE_MIN = '45'
     SIXTY_MIN = '60'
     TIMEPERWORKOUT = [
-        (THREE_DAYS, '30 Min'), 
-        (FOUR_DAYS, '45 Min'),
-        (FIVE_DAYS, '60 Min'),
+        (THIRTY_MIN, '30 Min'), 
+        (FOURTYFIVE_MIN, '45 Min'),
+        (SIXTY_MIN, '60 Min'),
     ]
 
     NO_EQ = 'NE'

@@ -47,7 +47,7 @@ class Workout(models.Model):
         return reverse('workout_detail', kwargs={'pk': self.pk})
 
     def is_simple_workout(self):
-        return self.training_type in {self.TrainingType.PILATES, self.TrainingType.YOGA}
+        return self.training_type in {self.TrainingType.YOGA}
 
     class Meta:
         ordering = ["-workout_day", ]
@@ -73,9 +73,6 @@ class Exercise(models.Model):
 
     def __str__(self):
         return str(self.name)
-
-    def get_absolute_url(self):
-        return reverse('exercise_detail', kwargs={'pk': self.pk})
 
     def save(self,*args, **kwargs):
         super().save(*args, **kwargs)

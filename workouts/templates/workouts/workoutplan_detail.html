@@ -13,7 +13,7 @@
                     <tbody>
                             <tr>
                                 <td class="align-middle">
-                                    Difficulty:
+                                    <i class="fas fa-tachometer-alt lilpadding"></i>Difficulty:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_difficulty_display }}
@@ -21,7 +21,7 @@
                             </tr>
                             <tr>
                                 <td class="align-middle">
-                                    Main Goal:
+                                    <i class="fas fa-bullseye lilpadding"></i>Main Goal:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_main_goal_display }}
@@ -29,7 +29,7 @@
                             </tr>
                             <tr>
                                 <td class="align-middle">
-                                    Program Duration:
+                                    <i class="far fa-calendar lilpadding"></i>Program Duration:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_plan_length_display }} Weeks
@@ -37,7 +37,7 @@
                             </tr>
                             <tr>
                                 <td class="align-middle">
-                                    Days Per Week:
+                                    <i class="fas fa-calendar-week lilpadding"></i>Days Per Week:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_days_per_week_display }}
@@ -45,7 +45,7 @@
                             </tr>
                             <tr>
                                 <td class="align-middle">
-                                    Time Per Workout:
+                                    <i class="fas fa-stopwatch lilpadding"></i>Time Per Workout:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_time_per_workout_display }}
@@ -53,7 +53,7 @@
                             </tr>
                             <tr>
                                 <td class="align-middle">
-                                    Equipment Required:
+                                    <i class="fas fa-tools lilpadding"></i>Equipment Required:
                                 </td>
                                 <td class="align-middle">
                                     {{ plan.get_equipment_display }}
@@ -70,7 +70,7 @@
                     {% if following %}
                         <a href="{% url 'workout-program-unfollow' plan.id %}" class="btn btn-danger">Unfollow workout program</a>
                     {% else %}
-                        <a class="follow_plan btn btn-success" href="#" data-toggle="modal" data-target="#popup_{{plan.id}}" data-popup-url="{% url 'workout-program-follow' plan.id %}">Follow workout plan</a>
+                        <a class="follow_plan btn btn-success" href="#" data-toggle="modal" data-target="#popup_{{plan.id}}" data-popup-url="{% url 'workout-program-follow' plan.id %}">Follow workout program</a>
                         {% include "workouts/starting_date_form.html" %}
                     {% endif %}
                 </p>

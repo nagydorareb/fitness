@@ -10,10 +10,11 @@
                 <div class="col-4 pcontainter">
                     <div class="card text-left">
                         <div class="card-body">
-                        <h4 class="card-title">{{ plan }}</h4>
+                        <h4 class="card-title"><a href="{% url 'workout-program-detail' plan.id %}">{{ plan }}</a></h4>
                         <h6 class="card-subtitle mb-2 text-muted">{{ plan.get_plan_length_display }} week program - {{ plan.get_time_per_workout_display }}/day</h6>
                         <p class="card-text text-center"><img src="{{ plan.image.url }}" alt="Plan image"></p>
                         <a href="{% url 'workout-program-detail' plan.id %}" class="card-link"><i class="fas fa-info lilpadding"></i>Details</a>
+                        <h6 class="float-right text-muted">{{ plan.get_main_goal_display }}</h6>
                         </div>
                     </div>
                 </div>
@@ -65,6 +66,3 @@
 </footer>
 
 {% endblock %}
-
-
-

@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from .models import Workout, ExerciseSet, SimpleExerciseSet, Exercise
 from .helpers import setform_helper, simplesetform_helper
 
-class SimpleSetForm(ModelForm):
+class SimpleSetForm(ModelForm): 
     """
     Form for adding exercises to workouts without sets/reps
     """

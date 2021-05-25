@@ -21,6 +21,7 @@ from django.views.generic import (
 )
 from django.views import View
 from django.http import (
+    HttpResponse,
     HttpResponseForbidden, 
     HttpResponseRedirect, 
     JsonResponse,

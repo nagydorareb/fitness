@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'coverage',
     'django_extensions',
     'bootstrap_modal_forms',
     'django_filters',
